@@ -1,4 +1,9 @@
-<script setup lang="ts">
+<script setup>
+
+import {createClient} from "@supabase/supabase-js";
+import {ref} from "vue";
+import {useTinkoffKassa} from "~/libs/TinkoffKassa.js";
+
 const props = defineProps({
   payload: {
     type: Object,
@@ -6,21 +11,95 @@ const props = defineProps({
   }
 });
 
-console.log(props.payload.price)
+const TerminalKey = "1690367929142DEMO";
+const password = "cahocmn5yh8kbin8";
+const key = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0";
+const apiUrl = "http://147.45.109.77:54321";
+const supabase = createClient(apiUrl, key);
+
+const customerData = ref({
+  full_name: "",
+  email: "",
+  phone: "",
+  amount: props.payload.price,
+  session_id: props.payload.session_id
+});
+
+const selectedPlacesInSupabase = ref([]);
+
+const genReceiptBySelectedPlaces = () => {
+  const Items = [];
+  props.payload.places.forEach((place) => {
+    Items.push({
+      Name: `Билет на ${place.place} место в ${place.row} ряду`,
+      Price: place.price * 100,
+      Quantity: 1,
+      Amount: place.price * 100,
+      Tax: "vat10",
+      Ean13: "303130323930303030630333435"
+    });
+  });
+  return {
+    Email: customerData.value.email,
+    Phone: customerData.value.phone,
+    Taxation: "osn",
+    Items: Items
+  };
+};
+
+const payment = async () => {
+  const payment_res = await supabase.from("Payments")
+      .insert([
+        customerData.value
+      ]).select();
+
+  for(let i = 0; i < props.payload.places.length; i++) {
+    const places_res = await supabase.from("MovieBookingSeat")
+        .select()
+        .eq("session_id", props.payload.places[i].session_id)
+        .eq("row", props.payload.places[i].row)
+        .eq("place", props.payload.places[i].place);
+
+    const place = places_res.data[0];
+    place.payment_id = payment_res.data[0].id;
+    selectedPlacesInSupabase.value.push(place);
+  }
+
+  const selectedIds = [];
+  selectedPlacesInSupabase.value.forEach(place => { selectedIds.push(place.id) });
+
+  await supabase.from("MovieBookingSeat")
+      .update(selectedPlacesInSupabase.value)
+      .in("id", selectedIds)
+      .select();
+
+  const tk_init_payment_data = {
+    Amount: customerData.value.amount * 100,
+    OrderId: payment_res.data[0].id,
+    Description: "Покупка билетов на мероприятие",
+    DATA: {
+      Phone: customerData.value.phone,
+      Email: customerData.value.email
+    },
+    Receipt: genReceiptBySelectedPlaces(),
+    NotificationURL: "http://147.45.109.77:3000/api/notifyPayment"
+  };
+
+  const TinkoffKassa = useTinkoffKassa();
+  const tk_payment_res = await fetch("/api/createPayment", {
+    method: "post",
+    body: JSON.stringify(tk_init_payment_data)
+  }).then(res => res.json())
+  window.location = tk_payment_res.PaymentURL;
+};
+
 </script>
 
 <template>
-<!--  <script src="https://securepay.tinkoff.ru/html/payForm/js/tinkoff_v2.js"></script>-->
-  <form class="payform-tinkoff" name="payform-tinkoff" onsubmit="pay(this); return false;">
-    <input class="payform-tinkoff-row" type="hidden" name="terminalkey" value="TinkoffBankTest">
-    <input class="payform-tinkoff-row" type="hidden" name="frame" value="false">
-    <input class="payform-tinkoff-row" type="hidden" name="language" value="ru">
-    <input :value="payload.price" class="payform-tinkoff-row" type="text" placeholder="Сумма заказа" name="amount" required>
-    <input class="payform-tinkoff-row" type="hidden" placeholder="Номер заказа" name="order">
-    <input class="payform-tinkoff-row" type="text" placeholder="Описание заказа" name="description">
-    <input class="payform-tinkoff-row" type="text" placeholder="ФИО плательщика" name="name">
-    <input class="payform-tinkoff-row" type="email" placeholder="E-mail" name="email">
-    <input class="payform-tinkoff-row" type="tel" placeholder="Контактный телефон" name="phone">
+  <form class="payform-tinkoff" @submit.prevent="payment" name="payform-tinkoff">
+    <input v-model="customerData.full_name" class="payform-tinkoff-row" type="text" placeholder="ФИО" name="name">
+    <input v-model="customerData.email" class="payform-tinkoff-row" type="email" placeholder="E-mail" name="email">
+    <input v-model="customerData.phone" class="payform-tinkoff-row" type="tel" placeholder="Контактный телефон" name="phone">
     <input class="payform-tinkoff-row payform-tinkoff-btn" type="submit" value="Оплатить">
   </form>
 </template>

@@ -8,7 +8,6 @@ const client = ref(null);
 
 // const movieSessionId = router.currentRoute._value.query.movie_session_id ?? null;
 const route = useRoute();
-console.log(route)
 const movieSessionId = route.query.movie_session_id;
 const selectedLimit = 6;
 
@@ -38,7 +37,6 @@ const getOccupiedPlaces = async () => {
 onMounted(async () => {
   client.value = createClient(apiUrl, key,  { db: { schema: 'public' } });
   const {data, error} = await client.value.from("MovieHallScheme").select("*");
-  console.log(data)
   schema.value = data[0].json_schema;
   colCount.value = schema.value[0].length;
   await getOccupiedPlaces();
@@ -48,7 +46,6 @@ onMounted(async () => {
 const subscribeToUpdateBookingSeat = () => {
   client.value.channel(`insert_session_${movieSessionId}`)
       .on('postgres_changes', { event: "insert", schema: 'public', table: 'MovieBookingSeat', filter: `session_id=eq.${movieSessionId}` }, (payload) => {
-        console.log(payload);
         getOccupiedPlaces();
       }).subscribe();
 };
@@ -93,7 +90,6 @@ const totalPrice = computed(() => {
 });
 
 const bookPlaces = async () => {
-  console.log(selectedPlace.value)
 
   orderModalShow.value = true;
 
@@ -103,14 +99,13 @@ const bookPlaces = async () => {
   });
 
   const response = await client.value.from("MovieBookingSeat").insert(selectedPlace.value).select();
-  console.log(response)
-  selectedPlace.value = [];
 };
 
 const orderPayload = () => {
   return {
     places: selectedPlace.value,
-    price: totalPrice.value
+    price: totalPrice.value,
+    session_id: movieSessionId
   };
 };
 
