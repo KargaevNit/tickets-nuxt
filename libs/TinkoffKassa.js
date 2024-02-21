@@ -1,9 +1,9 @@
 export const useTinkoffKassa = () => {
 
     const CONST = () => {
-        const tinkoff_url = "https://securepay.tinkoff.ru/v2";
-        const TerminalKey = "1690367929142DEMO";
-        const password = "cahocmn5yh8kbin8";
+        const tinkoff_url = process.env.TK_URL;
+        const TerminalKey = process.env.TK_TerminalKey;
+        const password = process.env.TK_Password;
         return {
             tinkoff_url,
             TerminalKey,
