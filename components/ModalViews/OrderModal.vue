@@ -12,7 +12,7 @@ const props = defineProps({
 });
 
 const key = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0";
-const apiUrl = "http://147.45.109.77:54321";
+const apiUrl = "https://tickets.web2cat.ru/supabase";
 const supabase = createClient(apiUrl, key);
 
 const customerData = ref({
@@ -95,9 +95,9 @@ const payment = async () => {
 
 <template>
   <form class="payform-tinkoff" @submit.prevent="payment" name="payform-tinkoff">
-    <input v-model="customerData.full_name" class="payform-tinkoff-row" type="text" placeholder="ФИО" name="name">
-    <input v-model="customerData.email" class="payform-tinkoff-row" type="email" placeholder="E-mail" name="email">
-    <input v-model="customerData.phone" class="payform-tinkoff-row" type="tel" placeholder="Контактный телефон" name="phone">
+    <input v-model="customerData.full_name" class="payform-tinkoff-row" required type="text" placeholder="ФИО" name="name">
+    <input v-model="customerData.email" class="payform-tinkoff-row" required type="email" placeholder="E-mail" name="email">
+    <input v-model="customerData.phone" class="payform-tinkoff-row" required type="tel" placeholder="Контактный телефон" name="phone">
     <input class="payform-tinkoff-row payform-tinkoff-btn" type="submit" value="Оплатить">
   </form>
 </template>
