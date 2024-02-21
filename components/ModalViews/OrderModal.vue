@@ -11,8 +11,6 @@ const props = defineProps({
   }
 });
 
-const TerminalKey = "1690367929142DEMO";
-const password = "cahocmn5yh8kbin8";
 const key = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0";
 const apiUrl = "http://147.45.109.77:54321";
 const supabase = createClient(apiUrl, key);
