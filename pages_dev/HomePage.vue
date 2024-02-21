@@ -15,7 +15,7 @@ const orderModalShow = ref(false);
 
 
 const key = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0";
-const apiUrl = "http://147.45.109.77:54321";
+const apiUrl = "https://tickets.web2cat.ru/supabase";
 
 
 const colCount = ref(1);
