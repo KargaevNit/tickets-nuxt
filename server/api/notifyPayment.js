@@ -3,9 +3,8 @@ import {createClient} from "@supabase/supabase-js";
 
 export default defineEventHandler(async (event) => {
     let body = await readBody(event);
-    body = JSON.parse(body);
     const supabase = createClient("https://ajaijburhzihuzlqldup.supabase.co", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFqYWlqYnVyaHppaHV6bHFsZHVwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MDg1MTA5OTgsImV4cCI6MjAyNDA4Njk5OH0.H1hQLcR46arQEMmL0a-C2rvW_JU7DMJ4AWEZ-6BANd8");
-    console.log(body);
+    console.log(body, typeof body);
     switch (body.Status) {
         case "CONFIRMED":
             await supabase.from("Payments")
