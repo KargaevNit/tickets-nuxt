@@ -91,13 +91,38 @@ const payment = async () => {
   window.location = tk_payment_res.PaymentURL;
 };
 
+const phoneMask = computed({
+  get() {
+    const phone = customerData.value.phone;
+    return phone
+        .replace('(', '')
+        .replace(')', '')
+        .replace('-', '')
+        .replace(' ', '');
+  },
+  set(value) {
+    customerData.value.phone = formatPhoneNumber(value);
+  }
+});
+
+const formatPhoneNumber = (phoneNumber) => {
+  phoneNumber = phoneNumber.replace(/\D/g, '');
+  if (phoneNumber.length === 11 && phoneNumber[0] === '8') {
+    return '+7 (' + phoneNumber.substr(1, 3) + ') ' + phoneNumber.substr(4, 3) + '-' + phoneNumber.substr(7, 2) + '-' + phoneNumber.substr(9, 2);
+  } else if (phoneNumber.length === 10) {
+    return '+7 (' + phoneNumber.substr(0, 3) + ') ' + phoneNumber.substr(3, 3) + '-' + phoneNumber.substr(6, 2) + '-' + phoneNumber.substr(8, 2);
+  } else {
+    return phoneNumber;
+  }
+};
+
 </script>
 
 <template>
   <form class="payform-tinkoff" @submit.prevent="payment" name="payform-tinkoff">
     <input v-model="customerData.full_name" class="payform-tinkoff-row" required type="text" placeholder="ФИО" name="name">
     <input v-model="customerData.email" class="payform-tinkoff-row" required type="email" placeholder="E-mail" name="email">
-    <input v-model="customerData.phone" class="payform-tinkoff-row" required type="tel" placeholder="Контактный телефон" name="phone">
+    <input @keydown="onInputPhone" v-model="phoneMask" class="payform-tinkoff-row" required type="tel" placeholder="Контактный телефон" name="phone">
     <input class="payform-tinkoff-row payform-tinkoff-btn" type="submit" value="Оплатить">
   </form>
 </template>
