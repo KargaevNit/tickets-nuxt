@@ -95,14 +95,11 @@ const totalPrice = computed(() => {
 });
 
 const bookPlaces = async () => {
-
   orderModalShow.value = true;
-
   selectedPlace.value.map((place) => {
     place['session_id'] = movieSessionId;
     return place;
   });
-
   const response = await client.value.from("MovieBookingSeat").insert(selectedPlace.value).select();
 };
 
@@ -114,14 +111,70 @@ const orderPayload = () => {
   };
 };
 
+const legends = {
+  0: {
+    color: "#4cd137",
+    price: 5000
+  },
+  1: {
+    color: "#4cd137",
+    price: 5000
+  },
+  2: {
+    color: "#74b9ff",
+    price: 3000
+  },
+  3: {
+    color: "#74b9ff",
+    price: 3000
+  },
+  4: {
+    color: "#74b9ff",
+    price: 3000
+  },
+  5: {
+    color: "#9c88ff",
+    price: 2000
+  },
+  6: {
+    color: "#9c88ff",
+    price: 2000
+  },
+  7: {
+    color: "#9c88ff",
+    price: 2000
+  },
+  8: {
+    color: "#4cd137",
+    price: 5000
+  }
+};
+
+const priceColor = {
+  5000: "#4cd137",
+  3000: "#74b9ff",
+  2000: "#9c88ff"
+};
+
+const getColorByPrice = (price) => {
+  const color = priceColor[price];
+  if(typeof color === undefined) { return "#74b9ff"; }
+  return color;
+};
+
 
 </script>
 
 <template>
   <div style="margin: 0 auto; width: max-content;">
     <ScreenImage />
+    <div class="legend">
+      <div v-for="(color, price) in priceColor" class="legend-dot">
+        <div class="dot" :style="`background-color: ${color};`"></div>
+        <div class="price">{{ price }}руб</div>
+      </div>
+    </div>
   </div>
-
   <div class="place-grid" :style="`grid-template-columns: repeat(${colCount + 1}, 1fr)`">
     <template v-for="(row, rowIdx) in schema">
       <div class="place">Ряд {{ rowIdx + 1 }}</div>
@@ -130,12 +183,11 @@ const orderPayload = () => {
         <template v-else>
           <div v-if="occupiedPlacesDictionary.includes(`${rowIdx + 1}_${ place.place }`)" class="place occupied"></div>
           <div v-else @click="selectPlace($event, rowIdx + 1, place)"  class="place free">
-            <span :class="{ selected: isSelected({ ...place, row: rowIdx + 1 }) !== false }">
+            <span :style="{ background: getColorByPrice(place.price) }" :class="{ selected: isSelected({ ...place, row: rowIdx + 1 }) !== false }">
               <span>{{ place.place }}</span>
             </span>
           </div>
         </template>
-
       </template>
     </template>
   </div>
@@ -151,6 +203,26 @@ const orderPayload = () => {
 </template>
 
 <style scoped>
+
+  .legend {
+    display: flex;
+    justify-content: space-around;
+    width: 100%;
+    padding: 1rem 0;
+  }
+
+  .legend-dot {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .legend-dot > .dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 2px;
+  }
 
   .booking-btn {
     padding: 1.5rem 4rem;
