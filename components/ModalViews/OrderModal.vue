@@ -11,8 +11,10 @@ const props = defineProps({
   }
 });
 
-const key = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFqYWlqYnVyaHppaHV6bHFsZHVwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MDg1MTA5OTgsImV4cCI6MjAyNDA4Njk5OH0.H1hQLcR46arQEMmL0a-C2rvW_JU7DMJ4AWEZ-6BANd8";
-const apiUrl = "https://ajaijburhzihuzlqldup.supabase.co";
+const config = useRuntimeConfig();
+
+const key = config.public.SB_KEY;
+const apiUrl = config.public.SB_URL;
 const supabase = createClient(apiUrl, key);
 
 const customerData = ref({

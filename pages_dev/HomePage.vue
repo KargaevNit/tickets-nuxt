@@ -2,6 +2,7 @@
 import {computed, onMounted, ref} from "vue";
 import { createClient } from '@supabase/supabase-js'
 import OrderModal from "@/components/ModalViews/OrderModal.vue";
+import ScreenImage from "~/components/ScreenImage.vue";
 
 const schema = ref([]);
 const client = ref(null);
@@ -13,10 +14,10 @@ const selectedLimit = 6;
 
 const orderModalShow = ref(false);
 
+const config = useRuntimeConfig();
 
-const key = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFqYWlqYnVyaHppaHV6bHFsZHVwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MDg1MTA5OTgsImV4cCI6MjAyNDA4Njk5OH0.H1hQLcR46arQEMmL0a-C2rvW_JU7DMJ4AWEZ-6BANd8";
-const apiUrl = "https://ajaijburhzihuzlqldup.supabase.co";
-
+const key = config.public.SB_KEY;
+const apiUrl = config.public.SB_URL;
 
 const colCount = ref(1);
 const selectedPlace = ref([]);
@@ -113,7 +114,10 @@ const orderPayload = () => {
 </script>
 
 <template>
-  <h1>Booking</h1>
+  <div style="margin: 0 auto; width: max-content;">
+    <ScreenImage />
+  </div>
+
   <div class="place-grid" :style="`grid-template-columns: repeat(${colCount + 1}, 1fr)`">
     <template v-for="(row, rowIdx) in schema">
       <div class="place">Ряд {{ rowIdx + 1 }}</div>
@@ -162,8 +166,8 @@ const orderPayload = () => {
 
   .place-grid {
     display: grid;
-    width: 100%;
-    margin: auto;
+    width: max-content;
+    margin: 0 auto;
     gap: 0.5rem;
   }
 
