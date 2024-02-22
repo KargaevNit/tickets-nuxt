@@ -111,45 +111,6 @@ const orderPayload = () => {
   };
 };
 
-const legends = {
-  0: {
-    color: "#4cd137",
-    price: 5000
-  },
-  1: {
-    color: "#4cd137",
-    price: 5000
-  },
-  2: {
-    color: "#74b9ff",
-    price: 3000
-  },
-  3: {
-    color: "#74b9ff",
-    price: 3000
-  },
-  4: {
-    color: "#74b9ff",
-    price: 3000
-  },
-  5: {
-    color: "#9c88ff",
-    price: 2000
-  },
-  6: {
-    color: "#9c88ff",
-    price: 2000
-  },
-  7: {
-    color: "#9c88ff",
-    price: 2000
-  },
-  8: {
-    color: "#4cd137",
-    price: 5000
-  }
-};
-
 const priceColor = {
   5000: "#4cd137",
   3000: "#74b9ff",
@@ -166,40 +127,43 @@ const getColorByPrice = (price) => {
 </script>
 
 <template>
-  <div style="margin: 0 auto; width: max-content;">
-    <ScreenImage />
-    <div class="legend">
-      <div v-for="(color, price) in priceColor" class="legend-dot">
-        <div class="dot" :style="`background-color: ${color};`"></div>
-        <div class="price">{{ price }}руб</div>
+  <div style="width: max-content">
+    <div style="margin: 0 auto; width: max-content;">
+      <ScreenImage />
+      <div class="legend">
+        <div v-for="(color, price) in priceColor" class="legend-dot">
+          <div class="dot" :style="`background-color: ${color};`"></div>
+          <div class="price">{{ price }}руб</div>
+        </div>
       </div>
     </div>
-  </div>
-  <div class="place-grid" :style="`grid-template-columns: repeat(${colCount + 1}, 1fr)`">
-    <template v-for="(row, rowIdx) in schema">
-      <div class="place">Ряд {{ rowIdx + 1 }}</div>
-      <template v-for="place in row">
-        <div v-if="place === null" class="place empty"></div>
-        <template v-else>
-          <div v-if="occupiedPlacesDictionary.includes(`${rowIdx + 1}_${ place.place }`)" class="place occupied"></div>
-          <div v-else @click="selectPlace($event, rowIdx + 1, place)"  class="place free">
+    <div class="place-grid" :style="`grid-template-columns: repeat(${colCount + 1}, 1fr)`">
+      <template v-for="(row, rowIdx) in schema">
+        <div class="place">Ряд {{ rowIdx + 1 }}</div>
+        <template v-for="place in row">
+          <div v-if="place === null" class="place empty"></div>
+          <template v-else>
+            <div v-if="occupiedPlacesDictionary.includes(`${rowIdx + 1}_${ place.place }`)" class="place occupied"></div>
+            <div v-else @click="selectPlace($event, rowIdx + 1, place)"  class="place free">
             <span :style="{ background: getColorByPrice(place.price) }" :class="{ selected: isSelected({ ...place, row: rowIdx + 1 }) !== false }">
               <span>{{ place.place }}</span>
             </span>
-          </div>
+            </div>
+          </template>
         </template>
       </template>
-    </template>
-  </div>
-  <div class="selected-places" :class="{
+    </div>
+    <div class="selected-places" :class="{
     hidden: selectedPlace.length === 0
   }">
-    <div class="list">
-      <p v-for="place in selectedPlace">Ряд {{place.row}}, место {{ place.place }}</p>
+      <div class="list">
+        <p v-for="place in selectedPlace">Ряд {{place.row}}, место {{ place.place }}</p>
+      </div>
+      <div @click="bookPlaces" :class="{disable: totalPrice === 0}" class="booking-btn">Купить за {{totalPrice}}</div>
     </div>
-    <div @click="bookPlaces" :class="{disable: totalPrice === 0}" class="booking-btn">Купить за {{totalPrice}}</div>
+    <Modal title="Оплата" :component="OrderModal" v-model:is-show="orderModalShow" :payload="orderPayload()" />
   </div>
-  <Modal title="Оплата" :component="OrderModal" v-model:is-show="orderModalShow" :payload="orderPayload()" />
+
 </template>
 
 <style scoped>
@@ -307,15 +271,13 @@ const getColorByPrice = (price) => {
 
 
   .selected-places {
-    position: fixed;
-    bottom: 0;
+    position: sticky;
+    left:0;
     border: 1px solid black;
     border-radius: 2rem 2rem 0 0 ;
     padding: 2rem;
-    width: 80%;
+    width: 100vw;
     margin: auto 0;
-    left: 50%;
-    transform: translateX(-50%);
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -323,7 +285,7 @@ const getColorByPrice = (price) => {
   }
 
   .selected-places.hidden {
-    bottom: -100%;
+    transform: translateX(-200%);
   }
 
   @media screen and (max-width: 768px) {
@@ -337,6 +299,16 @@ const getColorByPrice = (price) => {
       //height: 15px;
       padding: 5px 0;
     }
+
+    .selected-places .list {
+      flex-direction: column;
+      gap: 0;
+    }
+
+    .selected-places .list > p {
+      margin: 0;
+    }
   }
+
 
 </style>
