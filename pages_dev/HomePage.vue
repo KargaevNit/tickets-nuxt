@@ -48,7 +48,11 @@ const subscribeToUpdateBookingSeat = () => {
   client.value.channel(`insert_session_${movieSessionId}`)
       .on('postgres_changes', { event: "insert", schema: 'public', table: 'MovieBookingSeat', filter: `session_id=eq.${movieSessionId}` }, (payload) => {
         getOccupiedPlaces();
-      }).subscribe();
+      })
+      .on('postgres_changes', { event: "delete", schema: 'public', table: 'MovieBookingSeat', filter: `session_id=eq.${movieSessionId}` }, (payload) => {
+        getOccupiedPlaces();
+      })
+      .subscribe();
 };
 
 const isSelected = (place) => {

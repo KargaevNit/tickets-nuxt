@@ -61,6 +61,7 @@ const payment = async () => {
         .eq("place", props.payload.places[i].place);
 
     const place = places_res.data[0];
+    console.log(payment_res)
     place.payment_id = payment_res.data[0].id;
     selectedPlacesInSupabase.value.push(place);
   }
