@@ -70,7 +70,7 @@ const payment = async () => {
   selectedPlacesInSupabase.value.forEach(place => { selectedIds.push(place.id) });
 
   await supabase.from("MovieBookingSeat")
-      .update(selectedPlacesInSupabase.value)
+      .update({ payment_id: payment_res.data[0].id })
       .in("id", selectedIds)
       .select();
 
