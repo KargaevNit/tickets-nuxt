@@ -83,7 +83,8 @@ const payment = async () => {
       Email: customerData.value.email
     },
     Receipt: genReceiptBySelectedPlaces(),
-    NotificationURL: "https://tickets.web2cat.ru/api/notifyPayment"
+    NotificationURL: "https://tickets.web2cat.ru/api/notifyPayment",
+    SuccessURL: `https://tickets.web2cat.ru/success/${payment_res.data[0].id}`
   };
 
   const TinkoffKassa = useTinkoffKassa();
