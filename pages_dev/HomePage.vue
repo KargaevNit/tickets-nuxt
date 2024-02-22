@@ -30,6 +30,7 @@ const getOccupiedPlaces = async () => {
       .select("*")
       .eq("session_id", movieSessionId);
   occupiedPlaces.value = response.data;
+  occupiedPlacesDictionary.value = [];
   occupiedPlaces.value.forEach(place => {
     occupiedPlacesDictionary.value.push(`${place.row}_${place.place}`);
   });
@@ -49,10 +50,13 @@ const subscribeToUpdateBookingSeat = () => {
       .on('postgres_changes', { event: "insert", schema: 'public', table: 'MovieBookingSeat', filter: `session_id=eq.${movieSessionId}` }, (payload) => {
         getOccupiedPlaces();
       })
+      .subscribe();
+
+  client.value.channel(`delete_session_${movieSessionId}`)
       .on('postgres_changes', { event: "delete", schema: 'public', table: 'MovieBookingSeat', filter: `session_id=eq.${movieSessionId}` }, (payload) => {
         getOccupiedPlaces();
       })
-      .subscribe();
+      .subscribe()
 };
 
 const isSelected = (place) => {
