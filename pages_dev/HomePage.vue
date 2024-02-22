@@ -127,7 +127,7 @@ const getColorByPrice = (price) => {
 
 <template>
   <div style="width: 100vw; display: flex; flex-direction: column; height: 100vh; overflow: auto">
-    <div style="margin: 0 auto; width: 100vw;">
+    <div style="margin: 0 auto; width: 100vw; display: flex; justify-content: center; align-items: center; flex-direction: column;">
       <ScreenImage class="screen" />
       <div class="legend">
         <div v-for="(color, price) in priceColor" class="legend-dot">
