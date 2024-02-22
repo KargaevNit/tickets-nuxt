@@ -123,13 +123,12 @@ const getColorByPrice = (price) => {
   return color;
 };
 
-
 </script>
 
 <template>
-  <div style="width: max-content">
-    <div style="margin: 0 auto; width: max-content;">
-      <ScreenImage />
+  <div style="width: 100vw; display: flex; flex-direction: column; height: 100vh; overflow: auto">
+    <div style="margin: 0 auto; width: 100vw;">
+      <ScreenImage class="screen" />
       <div class="legend">
         <div v-for="(color, price) in priceColor" class="legend-dot">
           <div class="dot" :style="`background-color: ${color};`"></div>
@@ -137,7 +136,7 @@ const getColorByPrice = (price) => {
         </div>
       </div>
     </div>
-    <div class="place-grid" :style="`grid-template-columns: repeat(${colCount + 1}, 1fr)`">
+    <div class="place-grid" style="flex: 1; overflow: auto" :style="`grid-template-columns: repeat(${colCount + 1}, 1fr)`">
       <template v-for="(row, rowIdx) in schema">
         <div class="place">Ряд {{ rowIdx + 1 }}</div>
         <template v-for="place in row">
@@ -153,17 +152,19 @@ const getColorByPrice = (price) => {
         </template>
       </template>
     </div>
-    <div class="selected-places" :class="{
-    hidden: selectedPlace.length === 0
-  }">
-      <div class="list">
-        <p v-for="place in selectedPlace">Ряд {{place.row}}, место {{ place.place }}</p>
+    <div>
+      <div class="selected-places" :class="{
+      hidden: selectedPlace.length === 0
+    }">
+        <div class="list">
+          <p v-for="place in selectedPlace">Ряд {{place.row}}, место {{ place.place }}</p>
+        </div>
+        <div @click="bookPlaces" :style="{ transform: `translateX(${leftScroll}px)` }" :class="{disable: totalPrice === 0}" class="booking-btn">Купить за {{ totalPrice }}</div>
       </div>
-      <div @click="bookPlaces" :class="{disable: totalPrice === 0}" class="booking-btn">Купить за {{totalPrice}}</div>
     </div>
+
     <Modal title="Оплата" :component="OrderModal" v-model:is-show="orderModalShow" :payload="orderPayload()" />
   </div>
-
 </template>
 
 <style scoped>
@@ -271,13 +272,13 @@ const getColorByPrice = (price) => {
 
 
   .selected-places {
+    box-sizing: border-box;
     position: sticky;
-    left:0;
-    border: 1px solid black;
-    border-radius: 2rem 2rem 0 0 ;
+    left: 0px;
+    box-shadow: 0 0 5px 0 #000000;
     padding: 2rem;
     width: 100vw;
-    margin: auto 0;
+    margin: 0 0;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -295,8 +296,6 @@ const getColorByPrice = (price) => {
     }
 
     .place {
-      //width: 15px;
-      //height: 15px;
       padding: 5px 0;
     }
 
@@ -307,6 +306,10 @@ const getColorByPrice = (price) => {
 
     .selected-places .list > p {
       margin: 0;
+    }
+
+    .screen {
+      display: none;
     }
   }
 
