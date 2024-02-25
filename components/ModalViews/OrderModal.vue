@@ -2,7 +2,6 @@
 
 import {createClient} from "@supabase/supabase-js";
 import {ref} from "vue";
-import {useTinkoffKassa} from "~/libs/TinkoffKassa.js";
 
 const props = defineProps({
   payload: {
@@ -67,17 +66,23 @@ const payment = async () => {
   }
 
   const selectedIds = [];
-  selectedPlacesInSupabase.value.forEach(place => { selectedIds.push(place.id) });
+  const payment_description = [];
+  selectedPlacesInSupabase.value.forEach(place => {
+    selectedIds.push(place.id);
+    payment_description.push(`${place.row} ряд, ${place.place} место`);
+  });
 
   await supabase.from("MovieBookingSeat")
       .update({ payment_id: payment_res.data[0].id })
       .in("id", selectedIds)
       .select();
 
+
+
   const tk_init_payment_data = {
     Amount: customerData.value.amount * 100,
     OrderId: payment_res.data[0].id,
-    Description: "Покупка билетов на мероприятие",
+    Description: "Покупка билетов на мероприятие, места:" + payment_description.join("|"),
     DATA: {
       Phone: customerData.value.phone,
       Email: customerData.value.email
@@ -87,7 +92,6 @@ const payment = async () => {
     SuccessURL: `https://tickets.web2cat.ru/success/${payment_res.data[0].id}`
   };
 
-  const TinkoffKassa = useTinkoffKassa();
   const tk_payment_res = await fetch("/api/createPayment", {
     method: "post",
     body: JSON.stringify(tk_init_payment_data)
@@ -95,28 +99,40 @@ const payment = async () => {
   window.location = tk_payment_res.PaymentURL;
 };
 
-const phoneMask = computed({
-  get() {
-    const phone = customerData.value.phone;
-    return phone
-        .replace('(', '')
-        .replace(')', '')
-        .replace('-', '')
-        .replace(' ', '');
-  },
-  set(value) {
-    customerData.value.phone = formatPhoneNumber(value);
-  }
-});
 
-const formatPhoneNumber = (phoneNumber) => {
-  phoneNumber = phoneNumber.replace(/\D/g, '');
-  if (phoneNumber.length === 11 && phoneNumber[0] === '8') {
-    return '+7 (' + phoneNumber.substr(1, 3) + ') ' + phoneNumber.substr(4, 3) + '-' + phoneNumber.substr(7, 2) + '-' + phoneNumber.substr(9, 2);
-  } else if (phoneNumber.length === 10) {
-    return '+7 (' + phoneNumber.substr(0, 3) + ') ' + phoneNumber.substr(3, 3) + '-' + phoneNumber.substr(6, 2) + '-' + phoneNumber.substr(8, 2);
-  } else {
-    return phoneNumber;
+const phoneFieldInput = (event) => {
+  let inputValue = event.target.value;
+  inputValue = inputValue.replace(/\D/g, '');
+  console.log(inputValue)
+  event.target.value = '+7 (' + inputValue.substring(1, 4) + ') ' +
+      inputValue.substring(4, 7) + ' ' +
+      inputValue.substring(7, 9) + ' ' +
+      inputValue.substring(9, 11);
+
+  console.log(event.target.value);
+};
+
+const phoneFieldFocus = (event) => {
+  if (event.target.value === '') {
+    event.target.value = '+7 (';
+  }
+};
+
+const phoneFieldKeyDown = (event) => {
+  console.log(event.target.selectionStart, event.target.selectionEnd)
+  if (event.key === 'Backspace' && event.target.selectionStart === 7 && event.target.selectionEnd === 7) {
+    event.target.value = '';
+  }
+
+  let diff = 1;
+
+  if(event.target.selectionStart > 7 ) { diff = 4; }
+  if(event.target.selectionStart > 11 ) { diff = 2; }
+  if(event.target.selectionStart > 14 ) { diff = 1; }
+  if(event.target.selectionStart > 16 ) { diff = 0; }
+
+  if (event.key === 'Backspace') {
+    event.target.value = event.target.value.substring(0, event.target.selectionStart - diff);
   }
 };
 
@@ -126,7 +142,7 @@ const formatPhoneNumber = (phoneNumber) => {
   <form class="payform-tinkoff" @submit.prevent="payment" name="payform-tinkoff">
     <input v-model="customerData.full_name" class="payform-tinkoff-row" required type="text" placeholder="ФИО" name="name">
     <input v-model="customerData.email" class="payform-tinkoff-row" required type="email" placeholder="E-mail" name="email">
-    <input @keydown="onInputPhone" v-model="phoneMask" class="payform-tinkoff-row" required type="tel" placeholder="Контактный телефон" name="phone">
+    <input @input="phoneFieldInput" @keydown="phoneFieldKeyDown" @focus="phoneFieldFocus" v-model="customerData.phone" class="payform-tinkoff-row" required type="tel" placeholder="+7 (___) ___ __-__" name="phone">
     <input class="payform-tinkoff-row payform-tinkoff-btn" type="submit" value="Оплатить">
   </form>
 </template>
