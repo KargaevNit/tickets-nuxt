@@ -163,7 +163,7 @@ const getColorByPrice = (price) => {
         <div class="list">
           <p v-for="place in selectedPlace">Ряд {{place.row}}, место {{ place.place }}</p>
         </div>
-        <div @click="bookPlaces" :style="{ transform: `translateX(${leftScroll}px)` }" :class="{disable: totalPrice === 0}" class="booking-btn">Купить за {{ totalPrice }}</div>
+        <div @click="bookPlaces" :class="{disable: totalPrice === 0}" class="booking-btn">Купить за {{ totalPrice }}</div>
       </div>
     </div>
 

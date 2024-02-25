@@ -35,7 +35,6 @@ const genReceiptBySelectedPlaces = () => {
       Quantity: 1,
       Amount: place.price * 100,
       Tax: "vat10",
-      Ean13: "303130323930303030630333435"
     });
   });
   return {
@@ -52,6 +51,12 @@ const payment = async () => {
         customerData.value
       ]).select();
 
+  if(!payment_res.data) {
+    window.alert("Создание платежа было завершено с ошибкой! Ответ от базы выкинул в консоль!");
+    console.error(payment_res);
+    return;
+  }
+
   for(let i = 0; i < props.payload.places.length; i++) {
     const places_res = await supabase.from("MovieBookingSeat")
         .select()
@@ -60,7 +65,6 @@ const payment = async () => {
         .eq("place", props.payload.places[i].place);
 
     const place = places_res.data[0];
-    console.log(payment_res)
     place.payment_id = payment_res.data[0].id;
     selectedPlacesInSupabase.value.push(place);
   }
@@ -96,6 +100,13 @@ const payment = async () => {
     method: "post",
     body: JSON.stringify(tk_init_payment_data)
   }).then(res => res.json())
+
+  if(!Object.keys(tk_payment_res).includes("PaymentURL")) {
+    window.alert("Создание платежа было завершено с ошибкой! Ответ от Кассы выкинул в консоль!");
+    console.error(tk_payment_res);
+    return;
+  }
+
   window.location = tk_payment_res.PaymentURL;
 };
 
@@ -103,13 +114,10 @@ const payment = async () => {
 const phoneFieldInput = (event) => {
   let inputValue = event.target.value;
   inputValue = inputValue.replace(/\D/g, '');
-  console.log(inputValue)
   event.target.value = '+7 (' + inputValue.substring(1, 4) + ') ' +
       inputValue.substring(4, 7) + ' ' +
       inputValue.substring(7, 9) + ' ' +
       inputValue.substring(9, 11);
-
-  console.log(event.target.value);
 };
 
 const phoneFieldFocus = (event) => {
@@ -119,7 +127,6 @@ const phoneFieldFocus = (event) => {
 };
 
 const phoneFieldKeyDown = (event) => {
-  console.log(event.target.selectionStart, event.target.selectionEnd)
   if (event.key === 'Backspace' && event.target.selectionStart === 7 && event.target.selectionEnd === 7) {
     event.target.value = '';
   }
