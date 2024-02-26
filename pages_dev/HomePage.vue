@@ -214,6 +214,8 @@ const getColorByPrice = (price) => {
     width: max-content;
     margin: 0 auto;
     gap: 0.5rem;
+    padding: 0 5px;
+    box-sizing: border-box;
   }
 
   .place {
@@ -303,6 +305,10 @@ const getColorByPrice = (price) => {
       padding: 5px 0;
     }
 
+    .selected-places {
+      padding: 5px;
+    }
+
     .selected-places .list {
       flex-direction: column;
       gap: 0;
@@ -314,6 +320,13 @@ const getColorByPrice = (price) => {
 
     .screen {
       display: none;
+    }
+
+    .booking-btn {
+      padding: 1rem 2rem;
+      background: #0984e3;
+      border-radius: 3rem;
+      cursor: pointer;
     }
   }
 
