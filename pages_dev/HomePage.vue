@@ -156,7 +156,7 @@ const getColorByPrice = (price) => {
         </template>
       </template>
     </div>
-    <div>
+    <div class="wrapper-selected-places">
       <div class="selected-places" :class="{
       hidden: selectedPlace.length === 0
     }">
@@ -172,6 +172,19 @@ const getColorByPrice = (price) => {
 </template>
 
 <style scoped>
+
+  .wrapper-selected-places {
+    box-sizing: border-box;
+    position: sticky;
+    left: 0px;
+    padding: 2rem;
+    width: 100vw;
+    margin: 0 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: 0.5s;
+  }
 
   .legend {
     display: flex;
@@ -307,6 +320,7 @@ const getColorByPrice = (price) => {
 
     .selected-places {
       padding: 5px;
+      width: 100%;
     }
 
     .selected-places .list {
@@ -327,6 +341,10 @@ const getColorByPrice = (price) => {
       background: #0984e3;
       border-radius: 3rem;
       cursor: pointer;
+    }
+
+    .wrapper-selected-places {
+      padding: 0;
     }
   }
 
