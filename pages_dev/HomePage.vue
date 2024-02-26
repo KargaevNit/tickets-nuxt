@@ -140,7 +140,7 @@ const getColorByPrice = (price) => {
         </div>
       </div>
     </div>
-    <div class="place-grid" style="flex: 1; overflow-x: auto;" :style="`grid-template-columns: repeat(${colCount + 1}, 1fr)`">
+    <div class="place-grid" style="" :style="`grid-template-columns: repeat(${colCount + 1}, 1fr)`">
       <template v-for="(row, rowIdx) in schema">
         <div class="place">Ряд {{ rowIdx + 1 }}</div>
         <template v-for="place in row">
@@ -148,9 +148,13 @@ const getColorByPrice = (price) => {
           <template v-else>
             <div v-if="occupiedPlacesDictionary.includes(`${rowIdx + 1}_${ place.place }`)" class="place occupied"></div>
             <div v-else @click="selectPlace($event, rowIdx + 1, place)"  class="place free">
-            <span :style="{ background: getColorByPrice(place.price) }" :class="{ selected: isSelected({ ...place, row: rowIdx + 1 }) !== false }">
-              <span>{{ place.place }}</span>
-            </span>
+              <div class="place-overlay">
+                <div class="place__pos">Ряд: {{ rowIdx + 1 }} Место: {{ place.place }}</div>
+                <div class="place__price">Цена: {{ place.price }}</div>
+              </div>
+              <span :style="{ background: getColorByPrice(place.price) }" :class="{ selected: isSelected({ ...place, row: rowIdx + 1 }) !== false }">
+                <span>{{ place.place }}</span>
+              </span>
             </div>
           </template>
         </template>
@@ -225,11 +229,13 @@ const getColorByPrice = (price) => {
   .place-grid {
     display: grid;
     width: max-content;
-    margin: 20px auto;
+    margin: 0 auto;
     gap: 0.5rem;
     padding: 10px;
     box-sizing: border-box;
     min-height: 400px;
+    flex: 1;
+    overflow-x: visible;
   }
 
   .place {
@@ -253,6 +259,23 @@ const getColorByPrice = (price) => {
     //border-radius: 0.5rem;
     //background: #74b9ff;
     //cursor: pointer;
+    position: relative;
+  }
+
+  .place-overlay {
+    position: absolute;
+    display: none;
+    padding: 0.5rem;
+    background: #00000099;
+    color: #fff;
+    top: -200%;
+    z-index: 99;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+  .place.free:hover .place-overlay {
+    display: block;
   }
 
   .place.free > span {
@@ -305,13 +328,14 @@ const getColorByPrice = (price) => {
   }
 
   .selected-places.hidden {
-    transform: translateX(-200%);
+    transform: scale(0%);
   }
 
   @media screen and (max-width: 768px) {
     .place-grid {
       gap: 0.2rem;
       width: 100%;
+      overflow-x: auto;
     }
 
     .place {
