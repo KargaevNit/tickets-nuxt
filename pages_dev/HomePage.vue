@@ -212,9 +212,9 @@ const getColorByPrice = (price) => {
   .place-grid {
     display: grid;
     width: max-content;
-    margin: 0 auto;
+    margin: 20px auto;
     gap: 0.5rem;
-    padding: 0 5px;
+    padding: 10px;
     box-sizing: border-box;
   }
 
@@ -228,7 +228,6 @@ const getColorByPrice = (price) => {
   }
 
   .place > span {
-    display: block;
     width: 30px;
     height: 30px;
     display: flex;

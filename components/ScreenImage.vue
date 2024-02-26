@@ -20,7 +20,7 @@
         </g>
       </svg>
     </div>
-    <div class="title" style="color: #BCBCBC; font-family: Arial; text-transform: uppercase; font-size: 12px;">Сцена</div>
+    <div class="title" style="color: #BCBCBC; font-family: Arial; text-transform: uppercase; font-size: 12px; text-align: center;">Сцена</div>
   </div>
 
 </template>
