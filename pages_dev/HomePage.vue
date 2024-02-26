@@ -130,7 +130,7 @@ const getColorByPrice = (price) => {
 </script>
 
 <template>
-  <div style="width: 100vw; display: flex; flex-direction: column; height: 100vh; overflow: auto">
+  <div style="width: 100vw; display: flex; flex-direction: column; height: 100vh; overflow-x: auto">
     <div style="margin: 0 auto; width: 100vw; display: flex; justify-content: center; align-items: center; flex-direction: column;">
       <ScreenImage class="screen" />
       <div class="legend">
@@ -140,7 +140,7 @@ const getColorByPrice = (price) => {
         </div>
       </div>
     </div>
-    <div class="place-grid" style="flex: 1; overflow: auto" :style="`grid-template-columns: repeat(${colCount + 1}, 1fr)`">
+    <div class="place-grid" style="flex: 1; overflow-x: auto;" :style="`grid-template-columns: repeat(${colCount + 1}, 1fr)`">
       <template v-for="(row, rowIdx) in schema">
         <div class="place">Ряд {{ rowIdx + 1 }}</div>
         <template v-for="place in row">
@@ -216,6 +216,7 @@ const getColorByPrice = (price) => {
     gap: 0.5rem;
     padding: 10px;
     box-sizing: border-box;
+    min-height: 400px;
   }
 
   .place {
